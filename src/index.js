@@ -1,12 +1,24 @@
 const express = require("express");
 
+const sequelize = require("./util/database");
+const Titles = require("./models/titlesModel");
+
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
-  res.send("<h1>Hello World</h1>");
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.listen(PORT, () => {
-  console.log(`Server listening on PORT ${PORT}`);
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET", "POST", "PUT", "DELETE");
+  next();
 });
+app.use("/api/v1/titles", require("./v1/routes/titlesRoutes"));
+
+(async () => {
+  try {
+    app.listen(process.env.EXTERNAL_PORT || 3000);
+  } catch (error) {
+    console.error(error);
+  }
+})();
